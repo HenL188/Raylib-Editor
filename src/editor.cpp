@@ -1,0 +1,110 @@
+#include "editor.h"
+#include "../include/raylib.h"
+#include <iostream>
+
+// stops showing grid, coors, or dots
+void clear(Show *show){
+  if (IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyDown(KEY_G) && show->grid == true ||
+      IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_G) && show->grid == true ) show->grid = false;
+  else if (IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyDown(KEY_C) && show->coors == true ||
+      IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_C) && show->coors == true ) show->coors = false;
+  else if (IsKeyDown(KEY_RIGHT_CONTROL) && IsKeyDown(KEY_D) && show-> dots == true ||
+      IsKeyDown(KEY_LEFT_CONTROL) && IsKeyDown(KEY_D) && show->dots == true ) show->dots = false;
+  else {;}
+}
+// shows grid, coors, or dots
+void revel(Show *show, Grid *grid){
+  if (IsKeyDown(KEY_G)) {
+      show->grid = true;
+  }
+  else if (IsKeyDown(KEY_C)) {
+      show->coors = true;
+  }
+  else if (IsKeyDown(KEY_D)) {
+    show->dots = true;
+  } else {;}
+  if (show->grid) {
+      //draw veritcal lines
+      for (int i = 0; i < 10; i++){
+        DrawLineEx(grid->start_v, grid->end_v, 1.0, BLACK);
+        grid->start_v.x += 80;
+        grid->end_v.x += 80;
+      }
+      //draw horzontal lines
+      for (int i = 0; i < 6; i++){
+        DrawLineEx(grid->start_h, grid->end_h, 1.0, BLACK);
+        grid->start_h.y += 80;
+        grid->end_h.y += 80;
+      }
+  }
+  if (show->coors){
+    //draw coors
+    for (int i = 0; i < 11; i++){
+      for (int j = 0; j < 7; j++){
+        Vector2 coors = {80 * float(i), 80 * float(j)};
+        DrawText(TextFormat("(%i,%i)", 80 * i, 80 * j), int(coors.x), int(coors.y), 5.0, BLACK);
+      }
+    }
+  }
+  if (show->dots){
+    //draw coors dots
+    for (int i = 0; i < 11; i++){
+      for (int j = 0; j < 7; j++){
+        Vector2 circles = {80 * float(i), 80 * float(j)};
+        DrawCircleV(circles, 5.0, BLACK);
+      }
+    }
+  }
+}
+
+void State::save(){
+  
+}
+
+void State::load(){
+  
+}
+
+void editor(){
+  struct Window {
+    Vector2 start_w;
+    Vector2 end_w;
+    Vector2 start_h;
+    Vector2 end_h;
+  };
+
+  Show show = {
+    false,
+    false,
+    false,
+  };
+  InitWindow(1000, 650, "Editor");
+  while (!WindowShouldClose()){
+    Window window = {
+      .start_w = {0,0},
+      .end_w = {0,480},
+      .start_h = {0,0},
+      .end_h = {854, 0},
+    };
+    Grid grid = {
+      {80,0},
+      {80,480},
+      {0,80},
+      {854,80},
+    };
+    BeginDrawing();
+    ClearBackground(WHITE);
+    for (int i = 0; i < 2; i++){
+      DrawLineEx(window.start_w, window.end_w, 1.0, BLACK);
+      DrawLineEx(window.start_h, window.end_h, 1.0, BLACK);
+      window.start_h.y += 480;
+      window.end_h.y += 480;
+      window.start_w.x += 854;
+      window.end_w.x += 854;
+    }
+    revel(&show, &grid);
+    clear(&show);
+    EndDrawing();
+    }
+    CloseWindow();
+}
