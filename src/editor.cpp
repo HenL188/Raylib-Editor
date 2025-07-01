@@ -58,14 +58,35 @@ void revel(Show *show, Grid *grid){
 }
 
 void icons(Texture2D folder, Vector2 pos){
+  Vector2 mouse = GetMousePosition();
   for (int i; i < 4; i++){
      DrawTextureEx(folder, pos,0.0,0.20,WHITE);
+     DrawRectangleRec({pos.x, pos.y, 100, 100}, RED);
      pos.x += 150;
    }
   DrawText("Background", 180, 590, 10, BLACK);
   DrawText("Midground", 330, 590, 10, BLACK);
   DrawText("Foreground", 470, 590, 10, BLACK);
-  DrawText("Objects", 630, 590, 10, BLACK); 
+  DrawText("Objects", 630, 590, 10, BLACK);
+  DrawCircleV(mouse, 1.0, RED);
+  bool back = CheckCollisionCircleRec(mouse, 1.0,{150, pos.y, 100, 100});
+  bool mid = CheckCollisionCircleRec(mouse, 1.0,{300, pos.y, 100, 100});
+  bool fore = CheckCollisionCircleRec(mouse, 1.0,{450, pos.y, 100, 100});
+  bool obj = CheckCollisionCircleRec(mouse, 1.0,{600, pos.y, 100, 100});
+  if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+       
+  }
+  else if (mid && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+    
+  }
+  else if (fore && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+  
+  }
+  else if (obj && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+  
+  }
+  else {;}
+   
 }
 
 void State::save(){
