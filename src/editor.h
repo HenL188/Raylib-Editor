@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include "../include/raylib.h"
 
 struct Show {
@@ -18,7 +19,8 @@ struct Grid {
 
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
-void icons(Texture2D folder, Vector2 pos);
+void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets);
+std::vector<Texture2D> load_assets();
 void editor();
 class State {
 private:

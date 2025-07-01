@@ -1,6 +1,9 @@
 #include "editor.h"
 #include "../include/raylib.h"
 #include <iostream>
+#include <filesystem>
+
+namespace fs = std::filesystem;
 
 // stops showing grid, coors, or dots
 void clear(Show *show){
@@ -57,7 +60,7 @@ void revel(Show *show, Grid *grid){
   }
 }
 
-void icons(Texture2D folder, Vector2 pos){
+void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets){
   Vector2 mouse = GetMousePosition();
   for (int i; i < 4; i++){
      DrawTextureEx(folder, pos,0.0,0.20,WHITE);
@@ -89,6 +92,23 @@ void icons(Texture2D folder, Vector2 pos){
    
 }
 
+std::vector<Texture2D> load_assets(){
+  std::vector<std::string> asset;
+  std::vector<Texture2D> assets;
+  if (fs::directory_iterator("assets/background") != fs::directory_iterator()){
+      for (const auto& filename : fs::directory_iterator("assets/background") ){
+          std::cout << filename.path().filename();
+          asset.push_back(filename.path().filename().string());
+        }
+  }
+  if (!asset.empty()){
+    for (int i = 0; i < asset.capacity(); i++){
+       assets.push_back(LoadTexture(asset[i].c_str()));
+    }  
+  }
+  return assets;
+}
+
 void State::save(){
   
 }
@@ -112,9 +132,12 @@ void editor(){
     false,
     false,
   };
+
+    
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
- 
+  std::vector<Texture2D> assets = load_assets();
+  
   
   while (!WindowShouldClose()){
     Window window = {
@@ -139,7 +162,7 @@ void editor(){
       window.start_w.x += 854;
       window.end_w.x += 854;
     }
-    icons(folder, pos);
+    icons(folder, pos , &assets);
     revel(&show, &grid);
     clear(&show);
     EndDrawing();
