@@ -18,6 +18,7 @@ struct Grid {
 
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
+void icons(Texture2D folder, Vector2 pos);
 void editor();
 class State {
 private:

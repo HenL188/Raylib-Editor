@@ -57,6 +57,17 @@ void revel(Show *show, Grid *grid){
   }
 }
 
+void icons(Texture2D folder, Vector2 pos){
+  for (int i; i < 4; i++){
+     DrawTextureEx(folder, pos,0.0,0.20,WHITE);
+     pos.x += 150;
+   }
+  DrawText("Background", 180, 590, 10, BLACK);
+  DrawText("Midground", 330, 590, 10, BLACK);
+  DrawText("Foreground", 470, 590, 10, BLACK);
+  DrawText("Objects", 630, 590, 10, BLACK); 
+}
+
 void State::save(){
   
 }
@@ -73,12 +84,17 @@ void editor(){
     Vector2 end_h;
   };
 
+  Vector2 pos = {150, 525};
+
   Show show = {
-    false,
+    false, 
     false,
     false,
   };
   InitWindow(1000, 650, "Editor");
+  Texture2D folder = LoadTexture("folder.png");
+ 
+  
   while (!WindowShouldClose()){
     Window window = {
       .start_w = {0,0},
@@ -102,6 +118,7 @@ void editor(){
       window.start_w.x += 854;
       window.end_w.x += 854;
     }
+    icons(folder, pos);
     revel(&show, &grid);
     clear(&show);
     EndDrawing();
