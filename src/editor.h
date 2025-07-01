@@ -17,10 +17,17 @@ struct Grid {
   Vector2 end_h;
 };
 
+struct Count {
+  int back;
+  int mid;
+  int fore;
+  int obj;
+};
+
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
 void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets);
-std::vector<Texture2D> load_assets();
+std::vector<Texture2D> load_assets(Count& count);
 void editor();
 class State {
 private:
