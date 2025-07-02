@@ -148,7 +148,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
     }
     else
     {
-      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
+      DrawText("Empty", 450, 525, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -167,7 +167,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
     }
     else
     {
-      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
+      DrawText("Empty", 450, 525, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -186,7 +186,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
     }
     else
     {
-      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
+      DrawText("Empty", 450, 525, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -205,7 +205,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
     }
     else
     {
-      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
+      DrawText("Empty", 450, 525, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
