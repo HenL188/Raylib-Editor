@@ -1,6 +1,5 @@
 #include "editor.h"
 #include "../include/raylib.h"
-#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 
@@ -345,7 +344,7 @@ void editor()
 
   Position pos = {
       {150, 525},
-      {50, 450},
+      {50, 525},
   };
 
   Show show = {
