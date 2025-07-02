@@ -85,56 +85,164 @@ void revel(Show *show, Grid *grid)
   }
 }
 // renders the folder image and it contents
-void icons(Texture2D folder, Position pos, std::vector<Texture2D> *assets, Count count, Render& render)
+void icons(Texture2D folder, Position pos, Count count, Render &render)
 {
   Vector2 mouse = GetMousePosition();
-  if (scene == main) {
-    
-  
-  for (int i = 0; i < 4; i++)
+  if (scene == main)
   {
-    DrawTextureEx(folder, pos.icons, 0.0, 0.20, WHITE);
-    DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, RED);
-    pos.icons.x += 150;
+    for (int i = 0; i < 4; i++)
+    {
+      DrawTextureEx(folder, pos.icons, 0.0, 0.20, WHITE);
+      DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, RED);
+      pos.icons.x += 150;
+    }
+    DrawText("Background", 180, 590, 10, BLACK);
+    DrawText("Midground", 330, 590, 10, BLACK);
+    DrawText("Foreground", 470, 590, 10, BLACK);
+    DrawText("Objects", 630, 590, 10, BLACK);
+    DrawCircleV(mouse, 1.0, RED);
+    bool back = CheckCollisionCircleRec(mouse, 1.0, {150, pos.icons.y, 100, 100});
+    bool mid = CheckCollisionCircleRec(mouse, 1.0, {300, pos.icons.y, 100, 100});
+    bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.icons.y, 100, 100});
+    bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.icons.y, 100, 100});
+    if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    { 
+      render.back = true;
+      if (render.back)
+        scene = Back;
+    }
+    if (mid && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+      render.mid = true;
+      if (render.mid)
+        scene = Mid;
+    }
+    if (fore && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+      render.fore = true;
+      if (render.fore)
+        scene = Fore;
+    }
+    if (obj && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+      render.obj = true;
+      if (render.obj)
+        scene = Obj;
+    }
   }
-  DrawText("Background", 180, 590, 10, BLACK);
-  DrawText("Midground", 330, 590, 10, BLACK);
-  DrawText("Foreground", 470, 590, 10, BLACK);
-  DrawText("Objects", 630, 590, 10, BLACK);
-  DrawCircleV(mouse, 1.0, RED);
-  bool back = CheckCollisionCircleRec(mouse, 1.0, {150, pos.icons.y, 100, 100});
-  bool mid = CheckCollisionCircleRec(mouse, 1.0, {300, pos.icons.y, 100, 100});
-  bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.icons.y, 100, 100});
-  bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.icons.y, 100, 100});
-  if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+}
+
+void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
+{
+  if (scene == Back)
   {
-        if (count.back > 0) render.back = true;
-        if (render.back) scene = Back;
+    if (count.back > 0)
+    {
+      for (int i = 0; i < count.back; i++)
+      {
+        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+        pos.contents.x += 150;
+      }
+    }
+    else
+    {
+      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+    }
+    if (IsKeyPressed(KEY_B))
+      scene = main;
   }
-  else if (mid && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+  else if (scene == Mid)
   {
+    if (count.mid > 0)
+    {
+
+      for (int i = count.back; i < count.mid; i++)
+      {
+        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+        pos.contents.x += 150;
+      }
+    }
+    else
+    {
+      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+    }
+
+    if (IsKeyPressed(KEY_B))
+      scene = main;
   }
-  else if (fore && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+  else if (scene == Fore)
   {
+    if (count.fore > 0)
+    {
+      if (count.mid > 0)
+      {
+        for (int i = count.mid; i < count.fore; i++)
+        {
+          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+          pos.contents.x += 150;
+        }
+      }
+      else
+      {
+        for (int i = count.back; i < count.fore; i++)
+        {
+          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+          pos.contents.x += 150;
+        }
+      }
+    }
+    else
+    {
+      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+    }
+
+    if (IsKeyPressed(KEY_B))
+      scene = main;
   }
-  else if (obj && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+  else if (scene == Obj)
   {
+    if (count.obj > 0)
+    {
+      if (count.mid > 0)
+      {
+        if (count.fore > 0)
+        {
+          for (int i = count.fore; i < count.fore; i++)
+          {
+            DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+            pos.contents.x += 150;
+          }
+        }
+        else
+        {
+          for (int i = count.mid; i < count.obj; i++)
+          {
+            DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+            pos.contents.x += 150;
+          }
+        }
+      }
+      else
+      {
+        for (int i = count.back; i < count.fore; i++)
+        {
+          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+          pos.contents.x += 150;
+        }
+      }
+    }
+    else
+    {
+      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+    }
+    if (IsKeyPressed(KEY_B))
+      scene = main;
   }
   else
   {
     ;
   }
-  }
-  if (scene == Back){
-    for (int i = 0; i < assets->size(); i++)
-      {
-        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-        pos.contents.x += 150;
-      }
-      if (IsKeyPressed(KEY_B)) scene = main;
-  }
 }
-
 std::vector<Texture2D> load_assets(Count &count)
 {
   std::vector<std::string> back_asset;
@@ -272,13 +380,11 @@ void editor()
   };
 
   Show show = {
-      false
-  };
+      false};
 
   Render render = {
-    false
-  };
-  
+      false};
+
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
   std::vector<Texture2D> assets = load_assets(count);
@@ -307,9 +413,10 @@ void editor()
       window.start_w.x += 854;
       window.end_w.x += 854;
     }
-    icons(folder, pos, &assets, count, render);
     revel(&show, &grid);
     clear(&show);
+    icons(folder, pos, count, render);
+    render_assets(pos, &assets, count);
     EndDrawing();
   }
   UnloadTexture(folder);

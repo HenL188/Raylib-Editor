@@ -48,7 +48,8 @@ struct Render {
 
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
-void icons(Texture2D folder, Position pos,  std::vector<Texture2D> *assets, Count count, Render& render);
+void icons(Texture2D folder, Position pos, Count count, Render& render);
+void render_assets(Position pos, std::vector<Texture2D> *assets, Count& count);
 std::vector<Texture2D> load_assets(Count& count);
 void editor();
 class State {
