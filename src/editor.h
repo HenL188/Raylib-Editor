@@ -4,6 +4,16 @@
 #include <string>
 #include "../include/raylib.h"
 
+enum Scene {
+  main,
+  Back,
+  Mid,
+  Fore,
+  Obj,
+};
+
+static Scene scene = main;
+
 struct Show {
   bool grid;
   bool coors;
@@ -24,9 +34,21 @@ struct Count {
   int obj;
 };
 
+struct Position{
+  Vector2 icons;
+  Vector2 contents;
+};
+
+struct Render {
+ bool back;
+ bool mid;
+ bool fore;
+ bool obj;
+};
+
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
-void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets);
+void icons(Texture2D folder, Position pos,  std::vector<Texture2D> *assets, Count count, Render& render);
 std::vector<Texture2D> load_assets(Count& count);
 void editor();
 class State {

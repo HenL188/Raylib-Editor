@@ -1,5 +1,6 @@
 #include "editor.h"
 #include "../include/raylib.h"
+#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 
@@ -83,27 +84,32 @@ void revel(Show *show, Grid *grid)
     }
   }
 }
-
-void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets)
+// renders the folder image and it contents
+void icons(Texture2D folder, Position pos, std::vector<Texture2D> *assets, Count count, Render& render)
 {
   Vector2 mouse = GetMousePosition();
-  for (int i; i < 4; i++)
+  if (scene == main) {
+    
+  
+  for (int i = 0; i < 4; i++)
   {
-    DrawTextureEx(folder, pos, 0.0, 0.20, WHITE);
-    DrawRectangleRec({pos.x, pos.y, 100, 100}, RED);
-    pos.x += 150;
+    DrawTextureEx(folder, pos.icons, 0.0, 0.20, WHITE);
+    DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, RED);
+    pos.icons.x += 150;
   }
   DrawText("Background", 180, 590, 10, BLACK);
   DrawText("Midground", 330, 590, 10, BLACK);
   DrawText("Foreground", 470, 590, 10, BLACK);
   DrawText("Objects", 630, 590, 10, BLACK);
   DrawCircleV(mouse, 1.0, RED);
-  bool back = CheckCollisionCircleRec(mouse, 1.0, {150, pos.y, 100, 100});
-  bool mid = CheckCollisionCircleRec(mouse, 1.0, {300, pos.y, 100, 100});
-  bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.y, 100, 100});
-  bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.y, 100, 100});
+  bool back = CheckCollisionCircleRec(mouse, 1.0, {150, pos.icons.y, 100, 100});
+  bool mid = CheckCollisionCircleRec(mouse, 1.0, {300, pos.icons.y, 100, 100});
+  bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.icons.y, 100, 100});
+  bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.icons.y, 100, 100});
   if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
   {
+        if (count.back > 0) render.back = true;
+        if (render.back) scene = Back;
   }
   else if (mid && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
   {
@@ -118,9 +124,18 @@ void icons(Texture2D folder, Vector2 pos, std::vector<Texture2D> *assets)
   {
     ;
   }
+  }
+  if (scene == Back){
+    for (int i = 0; i < assets->size(); i++)
+      {
+        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
+        pos.contents.x += 150;
+      }
+      if (IsKeyPressed(KEY_B)) scene = main;
+  }
 }
 
-std::vector<Texture2D> load_assets(Count& count)
+std::vector<Texture2D> load_assets(Count &count)
 {
   std::vector<std::string> back_asset;
   std::vector<std::string> mid_asset;
@@ -140,7 +155,8 @@ std::vector<Texture2D> load_assets(Count& count)
     }
   }
   else
-    (exit(EXIT_FAILURE));
+    std::cout << "Background empty" << std::endl;
+
   if (!back_asset.empty())
   {
     for (int i = 0; i < back_asset.size(); i++)
@@ -150,17 +166,21 @@ std::vector<Texture2D> load_assets(Count& count)
       assets.push_back(a);
     }
     count.back = back_asset.size();
-  } else{;}
+  }
+  else
+  {
+    ;
+  }
   if (fs::directory_iterator(mid) != fs::directory_iterator())
   {
     for (const auto &filename : fs::directory_iterator(mid))
     {
       std::cout << filename.path().filename();
-      back_asset.push_back(filename.path().filename().string());
+      mid_asset.push_back(filename.path().filename().string());
     }
   }
   else
-    (exit(EXIT_FAILURE));
+    std::cout << "Midground empty" << std::endl;
   if (!mid_asset.empty())
   {
     for (int i = 0; i < mid_asset.size(); i++)
@@ -171,17 +191,20 @@ std::vector<Texture2D> load_assets(Count& count)
     }
     count.mid = mid_asset.size();
   }
-  else{;}
+  else
+  {
+    ;
+  }
   if (fs::directory_iterator(fore) != fs::directory_iterator())
   {
     for (const auto &filename : fs::directory_iterator(fore))
     {
       std::cout << filename.path().filename();
-      back_asset.push_back(filename.path().filename().string());
+      fore_asset.push_back(filename.path().filename().string());
     }
   }
   else
-    (exit(EXIT_FAILURE));
+    std::cout << "Foreground empty" << std::endl;
   if (!fore_asset.empty())
   {
     for (int i = 0; i < fore_asset.size(); i++)
@@ -191,18 +214,22 @@ std::vector<Texture2D> load_assets(Count& count)
       assets.push_back(a);
     }
     count.fore = fore_asset.size();
-  }else{;}
+  }
+  else
+  {
+    ;
+  }
   if (fs::directory_iterator(obj) != fs::directory_iterator())
   {
     for (const auto &filename : fs::directory_iterator(obj))
     {
       std::cout << filename.path().filename();
-      back_asset.push_back(filename.path().filename().string());
+      obj_asset.push_back(filename.path().filename().string());
     }
   }
   else
-    (exit(EXIT_FAILURE));
-  if (!back_asset.empty())
+    std::cout << "Objects empty" << std::endl;
+  if (!obj_asset.empty())
   {
     for (int i = 0; i < obj_asset.size(); i++)
     {
@@ -211,6 +238,10 @@ std::vector<Texture2D> load_assets(Count& count)
       assets.push_back(a);
     }
     count.obj = obj_asset.size();
+  }
+  else
+  {
+    ;
   }
   return assets;
 }
@@ -235,18 +266,22 @@ void editor()
 
   Count count = {0};
 
-  Vector2 pos = {150, 525};
-
-  Show show = {
-      false,
-      false,
-      false,
+  Position pos = {
+      {150, 525},
+      {50, 450},
   };
 
+  Show show = {
+      false
+  };
+
+  Render render = {
+    false
+  };
+  
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
   std::vector<Texture2D> assets = load_assets(count);
-
   while (!WindowShouldClose())
   {
     Window window = {
@@ -272,13 +307,14 @@ void editor()
       window.start_w.x += 854;
       window.end_w.x += 854;
     }
-    icons(folder, pos, &assets);
+    icons(folder, pos, &assets, count, render);
     revel(&show, &grid);
     clear(&show);
     EndDrawing();
   }
   UnloadTexture(folder);
-  for (const auto x : assets){
+  for (const auto x : assets)
+  {
     UnloadTexture(x);
   }
   CloseWindow();
