@@ -106,7 +106,7 @@ void icons(Texture2D folder, Position pos, Count count, Render &render)
     bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.icons.y, 100, 100});
     bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.icons.y, 100, 100});
     if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    { 
+    {
       render.back = true;
       if (render.back)
         scene = Back;
@@ -134,113 +134,81 @@ void icons(Texture2D folder, Position pos, Count count, Render &render)
 
 void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
 {
+  Vector2 drawPos = pos.contents; // Use a local copy for drawing position
+
   if (scene == Back)
   {
     if (count.back > 0)
     {
       for (int i = 0; i < count.back; i++)
       {
-        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-        pos.contents.x += 150;
+        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        drawPos.x += 150;
       }
     }
     else
     {
-      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
   }
   else if (scene == Mid)
   {
+    int start = count.back;
+    int end = count.back + count.mid;
     if (count.mid > 0)
     {
-
-      for (int i = count.back; i < count.mid; i++)
+      for (int i = start; i < end; i++)
       {
-        DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-        pos.contents.x += 150;
+        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        drawPos.x += 150;
       }
     }
     else
     {
-      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
     }
-
     if (IsKeyPressed(KEY_B))
       scene = main;
   }
   else if (scene == Fore)
   {
+    int start = count.back + count.mid;
+    int end = start + count.fore;
     if (count.fore > 0)
     {
-      if (count.mid > 0)
+      for (int i = start; i < end; i++)
       {
-        for (int i = count.mid; i < count.fore; i++)
-        {
-          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-          pos.contents.x += 150;
-        }
-      }
-      else
-      {
-        for (int i = count.back; i < count.fore; i++)
-        {
-          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-          pos.contents.x += 150;
-        }
+        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        drawPos.x += 150;
       }
     }
     else
     {
-      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
     }
-
     if (IsKeyPressed(KEY_B))
       scene = main;
   }
   else if (scene == Obj)
   {
+    int start = count.back + count.mid + count.fore;
+    int end = start + count.obj;
     if (count.obj > 0)
     {
-      if (count.mid > 0)
+      for (int i = start; i < end; i++)
       {
-        if (count.fore > 0)
-        {
-          for (int i = count.fore; i < count.fore; i++)
-          {
-            DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-            pos.contents.x += 150;
-          }
-        }
-        else
-        {
-          for (int i = count.mid; i < count.obj; i++)
-          {
-            DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-            pos.contents.x += 150;
-          }
-        }
-      }
-      else
-      {
-        for (int i = count.back; i < count.fore; i++)
-        {
-          DrawTextureEx((*assets)[i], pos.contents, 0.0, 0.05, WHITE);
-          pos.contents.x += 150;
-        }
+        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        drawPos.x += 150;
       }
     }
     else
     {
-      DrawText("Empty", pos.contents.x, pos.contents.y, 50, BLACK);
+      DrawText("Empty", drawPos.x, drawPos.y, 50, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
-  }
-  else
-  {
-    ;
   }
 }
 std::vector<Texture2D> load_assets(Count &count)
@@ -293,9 +261,10 @@ std::vector<Texture2D> load_assets(Count &count)
   {
     for (int i = 0; i < mid_asset.size(); i++)
     {
-      std::string full_path = back + mid_asset[i];
+      std::string full_path = mid + mid_asset[i];
       Texture2D a = LoadTexture(full_path.c_str());
       assets.push_back(a);
+      std::cout << "loaded";
     }
     count.mid = mid_asset.size();
   }
@@ -317,7 +286,7 @@ std::vector<Texture2D> load_assets(Count &count)
   {
     for (int i = 0; i < fore_asset.size(); i++)
     {
-      std::string full_path = back + fore_asset[i];
+      std::string full_path = fore + fore_asset[i];
       Texture2D a = LoadTexture(full_path.c_str());
       assets.push_back(a);
     }
@@ -341,7 +310,7 @@ std::vector<Texture2D> load_assets(Count &count)
   {
     for (int i = 0; i < obj_asset.size(); i++)
     {
-      std::string full_path = back + obj_asset[i];
+      std::string full_path = obj + obj_asset[i];
       Texture2D a = LoadTexture(full_path.c_str());
       assets.push_back(a);
     }
