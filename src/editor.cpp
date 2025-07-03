@@ -131,7 +131,7 @@ void icons(Texture2D folder, Position pos, Count count, Render &render)
   }
 }
 
-void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, int& asset, bool& pickup, bool& place)
+void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& ra)
 {
   Vector2 drawPos = pos.contents; // Use a local copy for drawing position
   Vector2 mouse = GetMousePosition();
@@ -139,23 +139,23 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, i
 
   if (scene == Back)
   {
-    if (count.back > 0)
+    if (ra.count.back > 0)
     {
-      for (int i = 0; i < count.back; i++)
+      for (int i = 0; i < ra.count.back; i++)
       {
         DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
         DrawRectangleRec({drawPos.x, drawPos.y, 50, 50}, RED);
         collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
         if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-          asset = i;
-          pickup = true;
+          ra.asset = i;
+          ra.pickup = true;
         }
         if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-          pickup = false;
-          place = true;
+          ra.pickup = false;
+          ra.place = true;
         }
-        if (place){
-          DrawTextureEx((*assets)[asset], {0,0}, 0.0, 1.0, WHITE);
+        if (ra.place){
+          DrawTextureEx((*assets)[ra.asset], {0,0}, 0.0, 1.0, WHITE);
         }
         drawPos.x += 150;
       }
@@ -169,9 +169,9 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, i
   }
   else if (scene == Mid)
   {
-    int start = count.back;
-    int end = count.back + count.mid;
-    if (count.mid > 0)
+    int start = ra.count.back;
+    int end = ra.count.back + ra.count.mid;
+    if (ra.count.mid > 0)
     {
       for (int i = start; i < end; i++)
       {
@@ -188,9 +188,9 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, i
   }
   else if (scene == Fore)
   {
-    int start = count.back + count.mid;
-    int end = start + count.fore;
-    if (count.fore > 0)
+    int start = ra.count.back + ra.count.mid;
+    int end = start + ra.count.fore;
+    if (ra.count.fore > 0)
     {
       for (int i = start; i < end; i++)
       {
@@ -207,9 +207,9 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, i
   }
   else if (scene == Obj)
   {
-    int start = count.back + count.mid + count.fore;
-    int end = start + count.obj;
-    if (count.obj > 0)
+    int start = ra.count.back + ra.count.mid + ra.count.fore;
+    int end = start + ra.count.obj;
+    if (ra.count.obj > 0)
     {
       for (int i = start; i < end; i++)
       {
@@ -224,8 +224,8 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, i
     if (IsKeyPressed(KEY_B))
       scene = main;
   }
-  if (pickup == true){
-    DrawTextureEx((*assets)[asset], mouse, 0.0, 0.05, WHITE);
+  if (ra.pickup == true){
+    DrawTextureEx((*assets)[ra.asset], mouse, 0.0, 0.05, WHITE);
   }
 }
 std::vector<Texture2D> load_assets(Count &count)
@@ -371,12 +371,17 @@ void editor()
   Render render = {
       false};
 
+ 
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
   std::vector<Texture2D> assets = load_assets(count);
-  int asset = -1;
-  bool pickup = false;
-  bool place = false;
+ RenderAssets ra = {
+    .count = count,
+    .asset = -1,
+    .pickup = false,
+    .place = false,
+  };
+  
   while (!WindowShouldClose())
   {
     Window window = {
@@ -405,7 +410,7 @@ void editor()
     revel(&show, &grid);
     clear(&show);
     icons(folder, pos, count, render);
-    render_assets(pos, &assets, count, asset, pickup, place);
+    render_assets(pos, &assets, ra);
     EndDrawing();
   }
   UnloadTexture(folder);

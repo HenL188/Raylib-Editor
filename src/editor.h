@@ -46,10 +46,17 @@ struct Render {
  bool obj;
 };
 
+struct RenderAssets {
+  Count count;
+  int asset;
+  bool pickup;
+  bool place;
+};
+
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
 void icons(Texture2D folder, Position pos, Count count, Render& render);
-void render_assets(Position pos, std::vector<Texture2D> *assets, Count& count, int& asset, bool& pickup, bool& place);
+void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& ra);
 std::vector<Texture2D> load_assets(Count& count);
 void editor();
 class State {
