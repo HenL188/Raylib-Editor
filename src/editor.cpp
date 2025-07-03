@@ -131,9 +131,11 @@ void icons(Texture2D folder, Position pos, Count count, Render &render)
   }
 }
 
-void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
+void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count, int& asset, bool& pickup, bool& place)
 {
   Vector2 drawPos = pos.contents; // Use a local copy for drawing position
+  Vector2 mouse = GetMousePosition();
+  bool collision;
 
   if (scene == Back)
   {
@@ -142,6 +144,19 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
       for (int i = 0; i < count.back; i++)
       {
         DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        DrawRectangleRec({drawPos.x, drawPos.y, 50, 50}, RED);
+        collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
+        if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+          asset = i;
+          pickup = true;
+        }
+        if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+          pickup = false;
+          place = true;
+        }
+        if (place){
+          DrawTextureEx((*assets)[asset], {0,0}, 0.0, 1.0, WHITE);
+        }
         drawPos.x += 150;
       }
     }
@@ -208,6 +223,9 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, Count &count)
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
+  }
+  if (pickup == true){
+    DrawTextureEx((*assets)[asset], mouse, 0.0, 0.05, WHITE);
   }
 }
 std::vector<Texture2D> load_assets(Count &count)
@@ -356,6 +374,9 @@ void editor()
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
   std::vector<Texture2D> assets = load_assets(count);
+  int asset = -1;
+  bool pickup = false;
+  bool place = false;
   while (!WindowShouldClose())
   {
     Window window = {
@@ -384,7 +405,7 @@ void editor()
     revel(&show, &grid);
     clear(&show);
     icons(folder, pos, count, render);
-    render_assets(pos, &assets, count);
+    render_assets(pos, &assets, count, asset, pickup, place);
     EndDrawing();
   }
   UnloadTexture(folder);
