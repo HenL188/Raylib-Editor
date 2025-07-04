@@ -2,6 +2,7 @@
 #include "../include/raylib.h"
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
 namespace fs = std::filesystem;
 
@@ -131,16 +132,11 @@ void icons(Texture2D folder, Position pos, Count count, Render &render)
   }
 }
 
-void place_assets(RenderAssets &ra){
-  
-}
-
 void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& ra)
 {
-  Vector2 drawPos = pos.contents; // Use a local copy for drawing position
+  Vector2 drawPos = pos.contents;
   Vector2 mouse = GetMousePosition();
   bool collision;
-  Texture2D x;
   if (scene == Back)
   {
     if (ra.count.back > 0)
@@ -153,6 +149,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& r
         if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
           ra.asset = i;
           ra.place = true;
+          ra.layer1.push_back((*assets)[i]);
         }
         if (ra.place){
           DrawTextureEx((*assets)[ra.asset], {0,0}, 0.0, 1.0, WHITE);
@@ -208,7 +205,21 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& r
     {
       for (int i = start; i < end; i++)
       {
-        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.05, WHITE);
+        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.25, WHITE);
+        DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width,(float)(*assets)[i].height }, BLANK);
+        collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
+        if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+          ra.asset = i;
+          ra.pickup = true;
+          ra.place = false;
+        }
+        if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
+          ra.pickup = false;
+          ra.place = true;
+        }
+        if (ra.place){
+          DrawTextureEx((*assets)[ra.asset], {0,0}, 0.0, 1.0, WHITE);
+        }
         drawPos.x += 150;
       }
     }
@@ -229,17 +240,24 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& r
       {
         DrawTextureEx((*assets)[i], drawPos, 0.0, 2.0, WHITE);
         DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width,(float)(*assets)[i].height }, BLANK);
+        DrawRectangleLinesEx({drawPos.x, drawPos.y, (float)(*assets)[i].width,(float)(*assets)[i].height }, 2.0, BLACK);
         collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
         if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
           ra.asset = i;
           ra.pickup = true;
+          ra.place = false;
+          ra.layer4.push_back((*assets)[ra.asset]);
         }
         if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
           ra.pickup = false;
           ra.place = true;
+          ra.location.push_back(mouse);
         }
         if (ra.place){
-          DrawTextureEx((*assets)[ra.asset], {0,0}, 0.0, 1.0, WHITE);
+          ra.pickup = false;
+          for (int j = 0; j < ra.layer4.size(); j++){
+            DrawTextureEx(ra.layer4[j], ra.location[j], 0.0, 4.0, WHITE);            
+          }
         }
         drawPos.x += 150;
       }

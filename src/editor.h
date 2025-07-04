@@ -51,12 +51,14 @@ struct RenderAssets {
   int asset;
   bool pickup;
   bool place;
+  std::vector<Texture2D> layer1, layer2, layer3, layer4;
+  std::vector<std::vector<Texture2D>> save;
+  std::vector<Vector2> location;     
 };
 
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
 void icons(Texture2D folder, Position pos, Count count, Render& render);
-void place_assets(RenderAssets& ra);
 void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets& ra);
 std::vector<Texture2D> load_assets(Count& count);
 void editor();
