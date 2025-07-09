@@ -10,7 +10,8 @@
 #define ICONS_TEXT_X 180
 #define ICONS_TEXT_Y 590
 #define ICONS_TEXT_SIZE 10 
-
+#define SCREEN_WIDTH 854
+#define SCREEN_HIGHT 480
 
 enum Scene
 {

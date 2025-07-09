@@ -140,6 +140,9 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
   Vector2 drawPos = pos.contents;
   Vector2 mouse = GetMousePosition();
   bool collision;
+  const int text_x = 450;
+  const int text_y = 525;
+  const int text_size = 50;
   if (scene == Back)
   {
     if (ra.count.back > 0)
@@ -164,7 +167,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
     }
     else
     {
-      DrawText("Empty", 450, 525, 50, BLACK);
+      DrawText("Empty", text_x, text_y, text_size, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -186,7 +189,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
           ra.pickup = true;
           ra.place = false;
         }
-        if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        if (mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
           ra.pickup = false;
           ra.place = true;
@@ -200,7 +203,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
     }
     else
     {
-      DrawText("Empty", 450, 525, 50, BLACK);
+      DrawText("Empty", text_x, text_y, text_size, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -222,7 +225,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
           ra.pickup = true;
           ra.place = false;
         }
-        if (mouse.x < 854 && mouse.y < 480 && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        if (mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
         {
           ra.pickup = false;
           ra.place = true;
@@ -236,7 +239,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
     }
     else
     {
-      DrawText("Empty", 450, 525, 50, BLACK);
+      DrawText("Empty", text_x, text_y, text_size, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -267,7 +270,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
       if (ra.pickup)
       {
         DrawTextureEx((*assets)[ra.asset], mouse, 0.0, 1.0, WHITE);
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mouse.x < 854 && mouse.y < 480)
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT)
         {
           ra.layer4.push_back((*assets)[ra.asset]);
           ra.location.push_back(mouse);
@@ -289,7 +292,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
     }
     else
     {
-      DrawText("Empty", 450, 525, 50, BLACK);
+      DrawText("Empty", text_x, text_y, text_size, BLACK);
     }
     if (IsKeyPressed(KEY_B))
       scene = main;
@@ -452,15 +455,15 @@ void editor()
   {
     Window window = {
         .start_w = {0, 0},
-        .end_w = {0, 480},
+        .end_w = {0, SCREEN_HIGHT},
         .start_h = {0, 0},
-        .end_h = {854, 0},
+        .end_h = {SCREEN_WIDTH, 0},
     };
     Grid grid = {
         {SCREEN_DRAWING_AMOUNT, 0},
-        {SCREEN_DRAWING_AMOUNT, 480},
+        {SCREEN_DRAWING_AMOUNT, SCREEN_HIGHT},
         {0, SCREEN_DRAWING_AMOUNT},
-        {854, SCREEN_DRAWING_AMOUNT},
+        {SCREEN_WIDTH, SCREEN_DRAWING_AMOUNT},
     };
     BeginDrawing();
     ClearBackground(WHITE);
@@ -468,10 +471,10 @@ void editor()
     {
       DrawLineEx(window.start_w, window.end_w, 1.0, BLACK);
       DrawLineEx(window.start_h, window.end_h, 1.0, BLACK);
-      window.start_h.y += 480;
-      window.end_h.y += 480;
-      window.start_w.x += 854;
-      window.end_w.x += 854;
+      window.start_h.y += SCREEN_HIGHT;
+      window.end_h.y += SCREEN_HIGHT;
+      window.start_w.x += SCREEN_WIDTH;
+      window.end_w.x += SCREEN_WIDTH;
     }
     revel(&show, &grid);
     clear(&show);
