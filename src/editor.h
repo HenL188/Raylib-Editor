@@ -4,6 +4,14 @@
 #include <string>
 #include "../include/raylib.h"
 
+#define VERTICAL_LINES 10
+#define HORIZONTAL_LINES 6
+#define SCREEN_DRAWING_AMOUNT 80
+#define ICONS_TEXT_X 180
+#define ICONS_TEXT_Y 590
+#define ICONS_TEXT_SIZE 10 
+
+
 enum Scene
 {
   main,

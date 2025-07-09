@@ -44,19 +44,19 @@ void revel(Show *show, Grid *grid)
   }
   if (show->grid)
   {
-    // draw veritcal lines
-    for (int i = 0; i < 10; i++)
+    // draw vertical lines
+    for (int i = 0; i < VERTICAL_LINES; i++)
     {
       DrawLineEx(grid->start_v, grid->end_v, 1.0, BLACK);
-      grid->start_v.x += 80;
-      grid->end_v.x += 80;
+      grid->start_v.x += SCREEN_DRAWING_AMOUNT;
+      grid->end_v.x += SCREEN_DRAWING_AMOUNT;
     }
-    // draw horzontal lines
-    for (int i = 0; i < 6; i++)
+    // draw horizontal lines
+    for (int i = 0; i < HORIZONTAL_LINES; i++)
     {
       DrawLineEx(grid->start_h, grid->end_h, 1.0, BLACK);
-      grid->start_h.y += 80;
-      grid->end_h.y += 80;
+      grid->start_h.y += SCREEN_DRAWING_AMOUNT;
+      grid->end_h.y += SCREEN_DRAWING_AMOUNT;
     }
   }
   if (show->coors)
@@ -66,8 +66,8 @@ void revel(Show *show, Grid *grid)
     {
       for (int j = 0; j < 7; j++)
       {
-        Vector2 coors = {80 * float(i), 80 * float(j)};
-        DrawText(TextFormat("(%i,%i)", 80 * i, 80 * j), int(coors.x), int(coors.y), 5.0, BLACK);
+        Vector2 coors = {SCREEN_DRAWING_AMOUNT * float(i), SCREEN_DRAWING_AMOUNT * float(j)};
+        DrawText(TextFormat("(%i,%i)", SCREEN_DRAWING_AMOUNT * i, SCREEN_DRAWING_AMOUNT * j), int(coors.x), int(coors.y), 5.0, BLACK);
       }
     }
   }
@@ -78,7 +78,7 @@ void revel(Show *show, Grid *grid)
     {
       for (int j = 0; j < 7; j++)
       {
-        Vector2 circles = {80 * float(i), 80 * float(j)};
+        Vector2 circles = {SCREEN_DRAWING_AMOUNT * float(i), SCREEN_DRAWING_AMOUNT * float(j)};
         DrawCircleV(circles, 5.0, BLACK);
       }
     }
@@ -87,24 +87,27 @@ void revel(Show *show, Grid *grid)
 // renders the folder image and it contents
 void icons(Texture2D folder, Position pos, Count count, Render &render)
 {
+  Rectangle back_rec = {ICONS_TEXT_X, pos.icons.y, 100, 100};
+  Rectangle mid_rec = {ICONS_TEXT_X + 150, pos.icons.y, 100, 100};
+  Rectangle fore_rec = {ICONS_TEXT_X + 300, pos.icons.y, 100, 100};
+  Rectangle obj_rec = {ICONS_TEXT_X + 450, pos.icons.y, 100, 100};
   Vector2 mouse = GetMousePosition();
   if (scene == main)
   {
     for (int i = 0; i < 4; i++)
     {
       DrawTextureEx(folder, pos.icons, 0.0, 0.20, WHITE);
-      DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, RED);
+      DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, BLANK);
       pos.icons.x += 150;
     }
-    DrawText("Background", 180, 590, 10, BLACK);
-    DrawText("Midground", 330, 590, 10, BLACK);
-    DrawText("Foreground", 470, 590, 10, BLACK);
-    DrawText("Objects", 630, 590, 10, BLACK);
-    DrawCircleV(mouse, 1.0, RED);
-    bool back = CheckCollisionCircleRec(mouse, 1.0, {150, pos.icons.y, 100, 100});
-    bool mid = CheckCollisionCircleRec(mouse, 1.0, {300, pos.icons.y, 100, 100});
-    bool fore = CheckCollisionCircleRec(mouse, 1.0, {450, pos.icons.y, 100, 100});
-    bool obj = CheckCollisionCircleRec(mouse, 1.0, {600, pos.icons.y, 100, 100});
+    DrawText("Background", ICONS_TEXT_X, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
+    DrawText("Midground", ICONS_TEXT_X + 150, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
+    DrawText("Foreground", ICONS_TEXT_X + 300, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
+    DrawText("Objects", ICONS_TEXT_X + 450, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
+    bool back = CheckCollisionCircleRec(mouse, 1.0, back_rec);
+    bool mid = CheckCollisionCircleRec(mouse, 1.0, mid_rec);
+    bool fore = CheckCollisionCircleRec(mouse, 1.0, fore_rec);
+    bool obj = CheckCollisionCircleRec(mouse, 1.0, obj_rec);
     if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
     {
       render.back = true;
@@ -249,7 +252,7 @@ void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &r
       {
         DrawTextureEx((*assets)[i], drawPos, 0.0, 2.0, WHITE);
         DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, BLANK);
-        DrawRectangleLinesEx({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, 2.0, BLACK);
+        DrawRectangleLinesEx({drawPos.x, drawPos.y, (float)(*assets)[i].width * 2.0f, (float)(*assets)[i].height * 2.0f}, 2.0, BLACK);
 
         // Pick up asset if clicked
         if (CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50}) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -454,10 +457,10 @@ void editor()
         .end_h = {854, 0},
     };
     Grid grid = {
-        {80, 0},
-        {80, 480},
-        {0, 80},
-        {854, 80},
+        {SCREEN_DRAWING_AMOUNT, 0},
+        {SCREEN_DRAWING_AMOUNT, 480},
+        {0, SCREEN_DRAWING_AMOUNT},
+        {854, SCREEN_DRAWING_AMOUNT},
     };
     BeginDrawing();
     ClearBackground(WHITE);
