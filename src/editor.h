@@ -9,9 +9,9 @@
 #define SCREEN_DRAWING_AMOUNT 80
 #define ICONS_TEXT_X 180
 #define ICONS_TEXT_Y 590
-#define ICONS_TEXT_SIZE 10 
+#define ICONS_TEXT_SIZE 10
 #define SCREEN_WIDTH 854
-#define SCREEN_HIGHT 480
+#define SCREEN_HEIGHT 480
 
 enum Scene
 {
@@ -53,31 +53,20 @@ struct Position
   Vector2 contents;
 };
 
-struct Render
+struct Properties
 {
-  bool back;
-  bool mid;
-  bool fore;
-  bool obj;
+  float size;
+  bool hitbox;
+  bool gravity;
+  bool slected;
 };
 
-struct RenderAssets
-{
-  Count count;
-  int asset;
-  bool pickup;
-  bool place;
-  std::vector<Texture2D> layer1, layer2, layer3, layer4;
-  std::vector<std::vector<Texture2D>> save;
-  std::vector<Vector2> location;
-  std::vector<std::pair<int, Vector2>> placedObjects;
-};
+static std::vector<Properties> asset_properties;
 
 void clear(Show *show);
 void revel(Show *show, Grid *grid);
-void icons(Texture2D folder, Position pos, Count count, Render &render);
-void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &ra);
 std::vector<Texture2D> load_assets(Count &count);
+// void properties(Properties &prop);
 void editor();
 class State
 {

@@ -1,8 +1,12 @@
 #include "editor.h"
+#include "renderer.h"
 #include "../include/raylib.h"
 #include <iostream>
 #include <filesystem>
 #include <vector>
+
+#define RAYGUI_IMPLEMENTATION
+#include "../include/raygui.h"
 
 namespace fs = std::filesystem;
 
@@ -84,220 +88,7 @@ void revel(Show *show, Grid *grid)
     }
   }
 }
-// renders the folder image and it contents
-void icons(Texture2D folder, Position pos, Count count, Render &render)
-{
-  Rectangle back_rec = {ICONS_TEXT_X, pos.icons.y, 100, 100};
-  Rectangle mid_rec = {ICONS_TEXT_X + 150, pos.icons.y, 100, 100};
-  Rectangle fore_rec = {ICONS_TEXT_X + 300, pos.icons.y, 100, 100};
-  Rectangle obj_rec = {ICONS_TEXT_X + 450, pos.icons.y, 100, 100};
-  Vector2 mouse = GetMousePosition();
-  if (scene == main)
-  {
-    for (int i = 0; i < 4; i++)
-    {
-      DrawTextureEx(folder, pos.icons, 0.0, 0.20, WHITE);
-      DrawRectangleRec({pos.icons.x, pos.icons.y, 100, 100}, BLANK);
-      pos.icons.x += 150;
-    }
-    DrawText("Background", ICONS_TEXT_X, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
-    DrawText("Midground", ICONS_TEXT_X + 150, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
-    DrawText("Foreground", ICONS_TEXT_X + 300, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
-    DrawText("Objects", ICONS_TEXT_X + 450, ICONS_TEXT_Y, ICONS_TEXT_SIZE, BLACK);
-    bool back = CheckCollisionCircleRec(mouse, 1.0, back_rec);
-    bool mid = CheckCollisionCircleRec(mouse, 1.0, mid_rec);
-    bool fore = CheckCollisionCircleRec(mouse, 1.0, fore_rec);
-    bool obj = CheckCollisionCircleRec(mouse, 1.0, obj_rec);
-    if (back && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-      render.back = true;
-      if (render.back)
-        scene = Back;
-    }
-    if (mid && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-      render.mid = true;
-      if (render.mid)
-        scene = Mid;
-    }
-    if (fore && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-      render.fore = true;
-      if (render.fore)
-        scene = Fore;
-    }
-    if (obj && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-    {
-      render.obj = true;
-      if (render.obj)
-        scene = Obj;
-    }
-  }
-}
 
-void render_assets(Position pos, std::vector<Texture2D> *assets, RenderAssets &ra)
-{
-  Vector2 drawPos = pos.contents;
-  Vector2 mouse = GetMousePosition();
-  bool collision;
-  const int text_x = 450;
-  const int text_y = 525;
-  const int text_size = 50;
-  if (scene == Back)
-  {
-    if (ra.count.back > 0)
-    {
-      for (int i = 0; i < ra.count.back; i++)
-      {
-        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.25, WHITE);
-        DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, BLANK);
-        collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
-        if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.asset = i;
-          ra.place = true;
-          ra.layer1.push_back((*assets)[i]);
-        }
-        if (ra.place)
-        {
-          DrawTextureEx((*assets)[ra.asset], {0, 0}, 0.0, 1.0, WHITE);
-        }
-        drawPos.x += 150;
-      }
-    }
-    else
-    {
-      DrawText("Empty", text_x, text_y, text_size, BLACK);
-    }
-    if (IsKeyPressed(KEY_B))
-      scene = main;
-  }
-  else if (scene == Mid)
-  {
-    int start = ra.count.back;
-    int end = ra.count.back + ra.count.mid;
-    if (ra.count.mid > 0)
-    {
-      for (int i = start; i < end; i++)
-      {
-        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.25, WHITE);
-        DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, BLANK);
-        collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
-        if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.asset = i;
-          ra.pickup = true;
-          ra.place = false;
-        }
-        if (mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.pickup = false;
-          ra.place = true;
-        }
-        if (ra.place)
-        {
-          DrawTextureEx((*assets)[ra.asset], {0, 0}, 0.0, 1.0, WHITE);
-        }
-        drawPos.x += 150;
-      }
-    }
-    else
-    {
-      DrawText("Empty", text_x, text_y, text_size, BLACK);
-    }
-    if (IsKeyPressed(KEY_B))
-      scene = main;
-  }
-  else if (scene == Fore)
-  {
-    int start = ra.count.back + ra.count.mid;
-    int end = start + ra.count.fore;
-    if (ra.count.fore > 0)
-    {
-      for (int i = start; i < end; i++)
-      {
-        DrawTextureEx((*assets)[i], drawPos, 0.0, 0.25, WHITE);
-        DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, BLANK);
-        collision = CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50});
-        if (collision && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.asset = i;
-          ra.pickup = true;
-          ra.place = false;
-        }
-        if (mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.pickup = false;
-          ra.place = true;
-        }
-        if (ra.place)
-        {
-          DrawTextureEx((*assets)[ra.asset], {0, 0}, 0.0, 1.0, WHITE);
-        }
-        drawPos.x += 150;
-      }
-    }
-    else
-    {
-      DrawText("Empty", text_x, text_y, text_size, BLACK);
-    }
-    if (IsKeyPressed(KEY_B))
-      scene = main;
-  }
-  else if (scene == Obj)
-  {
-    int start = ra.count.back + ra.count.mid + ra.count.fore;
-    int end = start + ra.count.obj;
-    // Draw asset icons for picking up
-    if (ra.count.obj > 0)
-    {
-      for (int i = start; i < end; i++)
-      {
-        DrawTextureEx((*assets)[i], drawPos, 0.0, 2.0, WHITE);
-        DrawRectangleRec({drawPos.x, drawPos.y, (float)(*assets)[i].width, (float)(*assets)[i].height}, BLANK);
-        DrawRectangleLinesEx({drawPos.x, drawPos.y, (float)(*assets)[i].width * 2.0f, (float)(*assets)[i].height * 2.0f}, 2.0, BLACK);
-
-        // Pick up asset if clicked
-        if (CheckCollisionCircleRec(mouse, 5.0, {drawPos.x, drawPos.y, 50, 50}) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
-        {
-          ra.asset = i;
-          ra.pickup = true;
-        }
-        drawPos.x += 150;
-      }
-
-      // Place asset if one is picked up and mouse is in bounds
-      if (ra.pickup)
-      {
-        DrawTextureEx((*assets)[ra.asset], mouse, 0.0, 1.0, WHITE);
-        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && mouse.x < SCREEN_WIDTH && mouse.y < SCREEN_HIGHT)
-        {
-          ra.layer4.push_back((*assets)[ra.asset]);
-          ra.location.push_back(mouse);
-          ra.pickup = false;
-        }
-      }
-
-      // Draw all placed objects
-      for (int j = 0; j < ra.layer4.size(); j++)
-      {
-        DrawTextureEx(ra.layer4[j], ra.location[j], 0.0, 4.0, WHITE);
-      }
-      if (IsKeyPressed(KEY_B))
-        scene = main;
-      if (ra.pickup == true)
-      {
-        DrawTextureEx((*assets)[ra.asset], mouse, 0.0, 1.0, WHITE);
-      }
-    }
-    else
-    {
-      DrawText("Empty", text_x, text_y, text_size, BLACK);
-    }
-    if (IsKeyPressed(KEY_B))
-      scene = main;
-  }
-}
 std::vector<Texture2D> load_assets(Count &count)
 {
   std::vector<std::string> back_asset;
@@ -410,6 +201,17 @@ std::vector<Texture2D> load_assets(Count &count)
   return assets;
 }
 
+// void properties(Properties &prop)
+// {
+//   DrawText("Properties", 870, 50, 10, BLACK);
+//   GuiCheckBox({870, 75, 20, 20}, "HitBox", &prop.hitbox);
+//   GuiCheckBox({870, 100, 20, 20}, "Gravtiy", &prop.gravity);
+//   for (auto &asset : asset_properties)
+//   {
+//     asset.asset_id
+//   }
+// }
+
 void State::save()
 {
 }
@@ -438,30 +240,34 @@ void editor()
   Show show = {
       false};
 
-  Render render = {
-      false};
-
   InitWindow(1000, 650, "Editor");
   Texture2D folder = LoadTexture("folder.png");
   std::vector<Texture2D> assets = load_assets(count);
-  RenderAssets ra = {
+  Renderer ren = {
       .count = count,
       .asset = -1,
       .pickup = false,
       .place = false,
   };
 
+  // Properties prop = {
+  //     .size = 1.0f,
+  //     .hitbox = false,
+  //     .gravity = false,
+  //     .slected = false,
+  // };
+
   while (!WindowShouldClose())
   {
     Window window = {
         .start_w = {0, 0},
-        .end_w = {0, SCREEN_HIGHT},
+        .end_w = {0, SCREEN_HEIGHT},
         .start_h = {0, 0},
         .end_h = {SCREEN_WIDTH, 0},
     };
     Grid grid = {
         {SCREEN_DRAWING_AMOUNT, 0},
-        {SCREEN_DRAWING_AMOUNT, SCREEN_HIGHT},
+        {SCREEN_DRAWING_AMOUNT, SCREEN_HEIGHT},
         {0, SCREEN_DRAWING_AMOUNT},
         {SCREEN_WIDTH, SCREEN_DRAWING_AMOUNT},
     };
@@ -471,15 +277,16 @@ void editor()
     {
       DrawLineEx(window.start_w, window.end_w, 1.0, BLACK);
       DrawLineEx(window.start_h, window.end_h, 1.0, BLACK);
-      window.start_h.y += SCREEN_HIGHT;
-      window.end_h.y += SCREEN_HIGHT;
+      window.start_h.y += SCREEN_HEIGHT;
+      window.end_h.y += SCREEN_HEIGHT;
       window.start_w.x += SCREEN_WIDTH;
       window.end_w.x += SCREEN_WIDTH;
     }
     revel(&show, &grid);
     clear(&show);
-    icons(folder, pos, count, render);
-    render_assets(pos, &assets, ra);
+    ren.icons(folder, pos, count);
+    ren.render_assets(pos, &assets);
+    // properties(prop);
     EndDrawing();
   }
   UnloadTexture(folder);
