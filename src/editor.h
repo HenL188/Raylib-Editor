@@ -23,6 +23,7 @@ enum Scene
 };
 
 static Scene scene = main;
+static Vector2 mouse;
 
 struct Show
 {
@@ -58,7 +59,9 @@ struct Properties
   float size;
   bool hitbox;
   bool gravity;
-  bool slected;
+  bool selected;
+  bool hitbox_checked;
+  bool gravity_checked;
 };
 
 static std::vector<Properties> asset_properties;

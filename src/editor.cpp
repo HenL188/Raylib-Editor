@@ -201,16 +201,20 @@ std::vector<Texture2D> load_assets(Count &count)
   return assets;
 }
 
-// void properties(Properties &prop)
-// {
-//   DrawText("Properties", 870, 50, 10, BLACK);
-//   GuiCheckBox({870, 75, 20, 20}, "HitBox", &prop.hitbox);
-//   GuiCheckBox({870, 100, 20, 20}, "Gravtiy", &prop.gravity);
-//   for (auto &asset : asset_properties)
-//   {
-//     asset.asset_id
-//   }
-// }
+void properties(Properties &prop)
+{
+  DrawText("Properties", 870, 50, 10, BLACK);
+  GuiCheckBox({870, 75, 20, 20}, "HitBox", &prop.hitbox);
+  GuiCheckBox({870, 100, 20, 20}, "Gravtiy", &prop.gravity);
+  for (auto &asset : asset_properties)
+  {
+    if (asset.selected)
+    {
+      prop.hitbox_checked = prop.hitbox;
+      prop.gravity_checked = prop.gravity;
+    }
+  }
+}
 
 void State::save()
 {
@@ -248,14 +252,17 @@ void editor()
       .asset = -1,
       .pickup = false,
       .place = false,
+      .clicked = false,
   };
 
-  // Properties prop = {
-  //     .size = 1.0f,
-  //     .hitbox = false,
-  //     .gravity = false,
-  //     .slected = false,
-  // };
+  Properties prop = {
+      .size = 1.0f,
+      .hitbox = false,
+      .gravity = false,
+      .selected = false,
+      .hitbox_checked = false,
+      .gravity_checked = false,
+  };
 
   while (!WindowShouldClose())
   {
@@ -285,9 +292,13 @@ void editor()
     revel(&show, &grid);
     clear(&show);
     ren.icons(folder, pos, count);
-    ren.render_assets(pos, &assets);
+    ren.render_assets(pos, &assets, prop);
     // properties(prop);
     EndDrawing();
+    // for (auto &i : asset_properties)
+    // {
+    //   std::cout << i.gravity_checked << std::endl;
+    // }
   }
   UnloadTexture(folder);
   for (const auto x : assets)

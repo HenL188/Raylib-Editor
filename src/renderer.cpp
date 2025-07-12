@@ -1,6 +1,8 @@
 #include "renderer.h"
+#include "editor.h"
+#include <iostream>
 
-void Renderer::render_assets(Position pos, std::vector<Texture2D> *assets)
+void Renderer::render_assets(Position pos, std::vector<Texture2D> *assets, Properties &prop)
 {
     Vector2 drawPos = pos.contents;
     Vector2 mouse = GetMousePosition();
@@ -146,8 +148,33 @@ void Renderer::render_assets(Position pos, std::vector<Texture2D> *assets)
             // Draw all placed objects
             for (int j = 0; j < layer4.size(); j++)
             {
+                Rectangle rect = {location[j].x, location[j].y, (float)layer4[j].width * 4.0f, (float)layer4[j].height * 4.0f};
                 DrawTextureEx(layer4[j], location[j], 0.0, 4.0, WHITE);
+                DrawRectangleRec(rect, BLANK);
+                bool is_colliding = CheckCollisionCircleRec(mouse, 5.0, rect);
+                bool is_mouse_clicked = IsMouseButtonPressed(MOUSE_LEFT_BUTTON);
+
+                if (!clicked && is_colliding && is_mouse_clicked)
+                {
+                    clicked = true;
+                    prop.selected = true;
+                    asset_properties.push_back(prop);
+                }
+                else if (clicked)
+                {
+                    DrawRectangleLinesEx(rect, 5.0f, BLACK);
+                    if (is_colliding && is_mouse_clicked)
+                    {
+                        clicked = false;
+                    }
+                }
+                else
+                {
+                    ;
+                }
             }
+            if (IsMouseButtonReleased(MOUSE_LEFT_BUTTON))
+                place = false;
             if (IsKeyPressed(KEY_B))
                 scene = main;
             if (pickup == true)
